@@ -4989,6 +4989,7 @@ fn real_engine_options(root: &std::path::Path) -> msime_engine::host::EngineOpti
         wubi_profile: 0,
         helpcode: false,
         show_helpcode: true,
+        shuangpin_helpcode_modes: msime_engine::ShuangpinHelpcodeModes::default(),
         helpcode_schema: "ziranma".into(),
         helpcode_trigger_key: None,
         chinese_punctuation: true,
@@ -4996,6 +4997,8 @@ fn real_engine_options(root: &std::path::Path) -> msime_engine::host::EngineOpti
         punctuation_lock: 0,
         corner_quotes: false,
         hollow_brackets: false,
+        enumeration_comma_backslash: true,
+        enumeration_comma_slash: false,
         frequency_mode: "promote".into(),
         frequency_trigger_count: 1,
         frequency_linear_step: 1,
@@ -5007,6 +5010,8 @@ fn real_engine_options(root: &std::path::Path) -> msime_engine::host::EngineOpti
         mixed_japanese: false,
         local_unicode: true,
         local_date_time: true,
+        local_date_time_inline: true,
+        local_date_time_menu: true,
         local_quick_phrase: true,
         local_emoji: true,
         local_kaomoji: true,
@@ -5025,6 +5030,7 @@ fn real_engine_options(root: &std::path::Path) -> msime_engine::host::EngineOpti
         mention_entries: Vec::new(),
         quick_phrase_table: Vec::new(),
         quick_phrase_candidates: false,
+        quick_phrase_frequency: true,
         helpcode_table: None,
         helpcode_fallback_resources: None,
         sentence_association: msime_engine::host::SentenceAssociationOptions {
@@ -9743,18 +9749,29 @@ fn view_reports_the_applied_punctuation_marks() {
     let json = serde_json::to_value(runtime.view()).unwrap();
     assert_eq!(
         json["punctuation_marks"],
-        serde_json::json!({ "quotes": "curly", "brackets": "solid" })
+        serde_json::json!({
+            "quotes": "curly",
+            "brackets": "solid",
+            "enumeration_comma_backslash": true,
+            "enumeration_comma_slash": false,
+        })
     );
     let before = runtime.view().generation;
     runtime.set_punctuation_marks(PunctuationMarks {
         quotes: QuoteMarks::Corner,
         brackets: msime_client_core::preferences::BracketStyle::Hollow,
+        ..PunctuationMarks::default()
     });
     let view = runtime.view();
     assert_eq!(view.generation, before);
     assert_eq!(
         serde_json::to_value(&view).unwrap()["punctuation_marks"],
-        serde_json::json!({ "quotes": "corner", "brackets": "hollow" })
+        serde_json::json!({
+            "quotes": "corner",
+            "brackets": "hollow",
+            "enumeration_comma_backslash": true,
+            "enumeration_comma_slash": false,
+        })
     );
 }
 

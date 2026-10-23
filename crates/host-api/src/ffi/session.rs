@@ -32,6 +32,7 @@ pub unsafe extern "C" fn msime_client_create(options: *const u8, length: usize) 
                 model: ai.model.clone(),
                 endpoint: ai.endpoint.clone(),
                 candidate_limit: host_ai_candidate_limit(ai.candidate_limit),
+                thinking: ai.thinking.clone(),
                 prompt_id: ai.prompt_id.clone(),
                 prompt_custom_1: ai.prompt_custom_1.clone(),
                 prompt_custom_2: ai.prompt_custom_2.clone(),
@@ -55,6 +56,7 @@ pub unsafe extern "C" fn msime_client_create(options: *const u8, length: usize) 
             &options.resources,
         );
         let edition = options.edition();
+        let quick_phrase_candidates_requested = options.quick_phrase_candidates.unwrap_or(false);
         let mut options = options.into_engine_options();
         let plugin_tables = plugin_tables::PluginTables::stamp(
             plugin_roots.installed.as_deref(),
@@ -154,6 +156,7 @@ pub unsafe extern "C" fn msime_client_create(options: *const u8, length: usize) 
                 HostSession {
                     runtime,
                     options,
+                    quick_phrase_candidates_requested,
                     edition,
                     applied,
                     requested: None,

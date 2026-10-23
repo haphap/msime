@@ -42,6 +42,8 @@ Linux 的中英文切换提示和输入法菜单与 macOS 差得很远，同一�
 
 角落提示的独立偏好由 `appearance_preferences_absent_defaults_and_roundtrip` 检查旧配置缺字段、关闭后的保存与恢复默认；`input-mode-hud-section.test.tsx` 检查角落开关不修改切换或聚焦开关；`mode_badge_style.cpp` 检查关闭角落提示后保留面板文字和 X11 光标徽章。
 
+IBus 原先保留的宣传快捷键后来由 [Linux 移除宣传彩蛋快捷键](../bug-fix/2026-10-22-linux-remove-promotion-shortcut.md)移除；Fcitx5 的菜单入口仍按本篇决定保留。
+
 ## Alternatives considered
 
 - **IBus 和 Fcitx5 也做成「中文输入」「英文输入」一对单选** — 与 macOS 一模一样。没有采用：IBus 的 `InputMode` 属性同时是面板读 中/英 符号的那个属性，ibus-ui-gtk3、GNOME Shell 和测试都按开关协议激活它（CHECKED/UNCHECKED）；拆成单选要么改这套协议，要么多一个隐藏的同步属性。一个勾选即中文的开关表达的是同一个状态。
@@ -68,3 +70,6 @@ Linux 的中英文切换提示和输入法菜单与 macOS 差得很远，同一�
 - `cargo test -p msime-client-core --lib host_surface` 钉住三个工具栏能力位。
 - 菜单顺序和方案名由 `tests/runtime/engine_smoke.cpp`、`fcitx5/tests/native.cpp` 钉住，它们只在 `tests/tools/check-container.sh` 的验收容器里跑（要已校验的词库）。写这篇时 develop 上这两个测试本身就过不去：`ibus-engine-smoke` 在分支的基线提交上同样停在「IBus did not keep an input-method ASCII digit as smart-punctuation context」，Fcitx5 的几个 native 模式停在「Disabled expression mode must pass through」一类已关闭的快捷模式仍吃掉 Shift 组合键的断言。把这几条基线就失败的断言改成只打印之后，`ibus-engine-smoke` 全部通过（含顶层顺序、方案菜单的各项激活）；`fcitx5-native-context` 走过了状态区数量、顺序、文案和选项子菜单的全部检查，停在更后面与菜单无关的翻译 socket 用例上。
 - 徽章在 Fcitx5 验收镜像里的真实 GTK 编辑器、classicui、原生画布和 Wayland 画布用例里都画得出来、不挡输入（`fcitx5-gtk-editor`、`fcitx5-*-canvas-*` 通过；`fcitx5-native-canvas-vertical` 在一次整轮运行里因测试自己读词库的竞态失败，单独重跑通过）。还没有在真实桌面上看过：GNOME、KDE 的托盘菜单和 IBus 面板的实际样子、X11 徽章跟随光标的位置都只经过单测和容器。
+
+- #9282 集成验证（2026-10-23）：`bash scripts/verify-local.sh --quick` 完整预热重跑通过。首次遇到 Swift 冷缓存超时及 Docker DNS 失败，Swift 两项和 Linux 原生门禁单独重跑通过后，再完整重跑确认。Linux 原生门禁编译 IBus、Fcitx5、full/wubi 并执行测试；这不是实际桌面会话验收。共享设置页五项专项及徽章策略检查已通过。
+- 集成提交时格式门禁指出九个上游 TypeScript 文件不符合当前 `oxfmt` 输出；仅按门禁列出的路径机械格式化并检查，没有修改行为。

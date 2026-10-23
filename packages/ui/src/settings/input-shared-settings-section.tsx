@@ -44,6 +44,8 @@ export interface InputSharedSettingsSectionProps {
   showMixedInputMinimumPrefix?: boolean;
   /** 本版本带临时日文，决定是否列出日文混输开关；见 `MixedInputMoreRowsProps.temporaryJapanese`。缺省为 true。 */
   temporaryJapanese?: boolean;
+  /** 宿主能把快捷短语混进普通候选（`HostCapabilities.quick_phrase_candidates`），决定是否列出快捷短语混输与调频开关。缺省为 false。 */
+  quickPhraseCandidates?: boolean;
   /** 放在「候选与联想」组的「学习选词习惯」之前。 */
   beforeLearning?: ReactNode;
   /** 「候选与联想」组里学习开关之后的行。 */
@@ -82,6 +84,7 @@ export function InputSharedSettingsSection({
   onMixedInputChange,
   showMixedInputMinimumPrefix = true,
   temporaryJapanese = true,
+  quickPhraseCandidates = false,
   beforeLearning,
   afterLearning,
   candidatesMore,
@@ -140,6 +143,7 @@ export function InputSharedSettingsSection({
         <MixedInputMoreRows
           preferences={mixedInput}
           temporaryJapanese={temporaryJapanese}
+          quickPhraseCandidates={quickPhraseCandidates}
           onChange={onMixedInputChange}
         />
       )}
